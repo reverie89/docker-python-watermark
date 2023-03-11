@@ -8,9 +8,9 @@ Text appears at a 45 degrees angle overlayed on an image
 To use app:
 
 1. Pull Docker image from [reverie89/python-watermark](https://hub.docker.com/r/reverie89/python-watermark) OR build from Dockerfile from this repo
-2. Put image files (.png or .jpg) into `input` directory
+2. Put image files (.png or .jpg or .webp) into `input` directory
 3. Put font file (.ttf) into `input` directory
-4. Edit .env as applicable for the text, font, color (R, G, B, Alpha), output extension
+4. Edit .env as applicable for the text, font, color (R, G, B, Alpha), output extension, optimize output
 5. Run the following:
 ```
 docker run
