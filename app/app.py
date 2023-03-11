@@ -2,11 +2,9 @@
 import os, datetime
 from PIL import Image, ImageFont, ImageDraw
 
-os.chdir("/app")
-
 # variables
-inputDir = os.getcwd() + "/input/"
-outputDir = os.getcwd() + "/output/"
+inputDir = "/input/"
+outputDir = "/output/"
 
 try:
 	os.makedirs(outputDir)
@@ -19,7 +17,7 @@ outputResult = open(outputDir + "/result.txt", "a")
 outputExt = os.getenv("OUTPUT_EXTENSION")
 watermark_text = os.getenv("WATERMARK_TEXT")
 watermark_color = tuple(map(int, os.getenv("WATERMARK_COLOR").split(", ")))
-fontfamily = os.getenv("FONT_FAMILY")
+fontfamily = inputDir + os.getenv("FONT_FAMILY")
 
 
 class Watermark:
@@ -79,6 +77,7 @@ for	filename in os.listdir(inputDir):
 				result = "%s %s %s%s %s" % (datetime.datetime.now(), "-", filename[:-3], outputExt.lower(), "- OK\n")
 			else:
 				result = "%s %s %s%s %s" % (datetime.datetime.now(), "-", filename[:-3], outputExt.lower(), "- NO\n")
+		case _:
+			continue
 	outputResult.write(result)
 	print(result)
-
