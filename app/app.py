@@ -16,17 +16,19 @@ except FileExistsError:
 
 outputResult = open(outputDir + "/result.txt", "a")
 
+outputExt = os.getenv("OUTPUT_EXTENSION")
 watermark_text = os.getenv("WATERMARK_TEXT")
 watermark_color = tuple(map(int, os.getenv("WATERMARK_COLOR").split(", ")))
 fontfamily = os.getenv("FONT_FAMILY")
 
 
 class Watermark:
-	def __init__(self, inputFile, ext, inputDir, outputDir):
+	def __init__(self, inputFile, ext, inputDir, outputDir, outExt):
 		self.inputFile = inputFile
 		self.ext = ext
 		self.inputDir = inputDir
 		self.outputDir = outputDir
+		self.outExt = outExt
 
 	def text(self, watermark_text, fontfamily):
 		self.watermark_text = watermark_text
@@ -54,7 +56,10 @@ class Watermark:
 		watermark_image.paste(rotate_watermark, (rotate_x, rotate_y))
 		combined_image = Image.alpha_composite(image, watermark_image)
 		try:
-			combined_image.save(self.outputDir + self.inputFile, self.ext)
+			match self.outExt:
+				case "JPG" | "JPEG":
+					combined_image = combined_image.convert("RGB")
+			combined_image.save(self.outputDir + self.inputFile[:-3] + self.outExt.lower(), self.outExt)
 			return True
 		except Exception as e:
 			print(e)
@@ -63,19 +68,17 @@ class Watermark:
 for	filename in os.listdir(inputDir):
 	match filename[-4:].lower():
 		case ".png":
-			process = Watermark(inputFile=filename, ext="PNG", inputDir=inputDir, outputDir=outputDir)
+			process = Watermark(inputFile=filename, ext="PNG", inputDir=inputDir, outputDir=outputDir, outExt=outputExt)
 			if process.text(watermark_text=watermark_text, fontfamily=fontfamily):
-				result = "%s %s %s %s" % (datetime.datetime.now(), "-", filename, "- OK\n")
+				result = "%s %s %s%s %s" % (datetime.datetime.now(), "-", filename[:-3], outputExt.lower(), "- OK\n")
 			else:
-				result = "%s %s %s %s" % (datetime.datetime.now(), "-", filename, "- NO\n")
-			outputResult.write(result)
-			print(result)
+				result = "%s %s %s%s %s" % (datetime.datetime.now(), "-", filename[:-3], outputExt.lower(), "- NO\n")
 		case ".jpg":
-			process = Watermark(inputFile=filename, ext="JPG", inputDir=inputDir, outputDir=outputDir)
+			process = Watermark(inputFile=filename, ext="JPG", inputDir=inputDir, outputDir=outputDir, outExt=outputExt)
 			if process.text(watermark_text=watermark_text, fontfamily=fontfamily):
-				result = "%s %s %s %s" % (datetime.datetime.now(), "-", filename, "- OK\n")
+				result = "%s %s %s%s %s" % (datetime.datetime.now(), "-", filename[:-3], outputExt.lower(), "- OK\n")
 			else:
-				result = "%s %s %s %s" % (datetime.datetime.now(), "-", filename, "- NO\n")
-			outputResult.write(result)
-			print(result)
-	pass
+				result = "%s %s %s%s %s" % (datetime.datetime.now(), "-", filename[:-3], outputExt.lower(), "- NO\n")
+	outputResult.write(result)
+	print(result)
+
